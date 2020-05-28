@@ -1,0 +1,21 @@
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+s_level = IN[0]
+e_level = IN[1]
+
+levels = []
+
+
+for num in range(int(s_level), (int(e_level) + 1)):
+	levels.append(num)
+	
+	
+	
+str_levels = str(levels).strip("[]")
+
+
+
+#Assign your output to the OUT variable.
+OUT = str_levels.replace(" ", "")

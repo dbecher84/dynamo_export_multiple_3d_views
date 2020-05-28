@@ -1,0 +1,61 @@
+import clr
+
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import*
+
+clr.AddReference('RevitAPI')
+import Autodesk
+from Autodesk.Revit.DB import*
+
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+import time
+import System
+from System.Collections.Generic import *
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+folder = IN[0]
+name = IN[1]
+date = IN[2]
+int_coord = IN[3]
+run = IN[4]
+
+date_str = time.strftime("%Y%m%d")
+
+collector = FilteredElementCollector(doc).OfClass(View)
+
+#set export options for Navisworks
+options = Autodesk.Revit.DB.NavisworksExportOptions()
+options.ExportScope = NavisworksExportScope.View
+options.ExportLinks = False
+options.ExportRoomAsAttribute = True
+options.ExportRoomGeometry = False
+options.ExportUrls = False
+options.DivideFileIntoLevels = False
+options.ConvertElementProperties = True
+options.ExportElementIds = True
+options.FindMissingMaterials = True
+options.Parameters = NavisworksParameters.All
+
+if int_coord == True:
+	options.Coordinates = NavisworksCoordinates.Internal
+else:
+	options.Coordinates = NavisworksCoordinates.Shared
+
+#export the views
+if run == True:
+	for item in name:
+		for view in collector:
+			if (view.ViewType == ViewType.ThreeD and view.Name.Contains(item)):
+				options.ViewId = view.Id
+				if date == True:
+					name_date = view.Name + '_' + date_str
+					doc.Export(folder, name_date + ".nwc", options)
+				else:
+					doc.Export(folder, view.Name + ".nwc", options)
+
+OUT = "Success"

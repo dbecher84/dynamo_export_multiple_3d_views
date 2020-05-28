@@ -1,0 +1,37 @@
+import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+#The inputs to this node will be stored as a list in the IN variables.
+str_level = IN[0]
+label = IN[1]
+whitespaces = IN[2]
+lead_0 = IN[3]
+run = IN[4]
+
+if whitespaces == False:
+	levels = str_level.split(',')
+else:
+	clean_str = str_level.replace(" ", "")
+	levels = clean_str.split(',')
+
+view_list = []
+
+if run == True:
+	for item in levels:
+		if str.isdigit(item):
+			if lead_0 ==True:
+				if int(item) < 10:
+					num = '0' + str(item)
+					name = label.replace('##', num)
+					view_list.append(name)
+				else:
+					num = str(item)
+					name = label.replace('##', num)
+					view_list.append(name)
+		else:
+			num = str(item)
+			name = label.replace('##', num)
+			view_list.append(name)
+		
+#Assign your output to the OUT variable.
+OUT = view_list
